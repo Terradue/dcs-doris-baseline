@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<application xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" id="tsx-adore">
+  <jobTemplates>
+    <jobTemplate id="adore">
+      <streamingExecutable>/application/adore/run.sh</streamingExecutable>
+      <defaultParameters>
+        <parameter id="master" title="TerraSAR-X master product reference" abstract="Define the master TerraSAR-X product reference to use with ADORE" scope="runtime">s3://terrasar-x/2014/02/TSX_20140212T164857.921_Etna_C222_O055_A_R_SM006_SSC.tar.gz</parameter>
+      </defaultParameters>
+      <defaultJobconf>
+      	<property id="ciop.job.max.tasks">1</property>
+        <property id="mapred.task.timeout">9900000000</property>
+      </defaultJobconf>
+    </jobTemplate>
+  </jobTemplates>
+  <workflow id="adore_wf" title="TerraSAR-X processing with ADORE DORIS" abstract="TerraSAR-X processing with ADORE DORIS">
+    <workflowVersion>1.0</workflowVersion>
+    <node id="node_adore">
+      <job id="adore" />
+      <sources>
+        <source scope="runtime" id="slave" title="TerraSAR-X slave product reference" abstract="Define the slave TerraSAR-X product reference to use with ADORE" refid="string:list">s3://terrasar-x/2014/02/TSX_20140201T164858.314_Etna_C221_O055_A_R_SM006_SSC.tar.gz</source>
+      </sources>
+      <parameters/>
+    </node>
+  </workflow>
+</application>
