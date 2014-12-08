@@ -33,9 +33,6 @@ $ERR_EXTRACT) msg="Failed to retrieve the extract the vol and lea";;
 }
 trap cleanExit EXIT
 
-# shorter temp path 
-TMPDIR="/tmp/`uuidgen`"
-
 # creates the adore directory structure
 ciop-log "INFO" "creating the directory structure"
 mkdir -p $TMPDIR/input
@@ -55,10 +52,10 @@ while read slave_ref
 do
 
   ciop-log "INFO" "Retrieving slave"
-  slave="`echo $slave_ref | ciop-copy -U -O $TMPDIR -`"
+  slave="`echo $slave_ref | ciop-copy -O $TMPDIR -`"
   [ $? -ne 0 ] && exit $ERR_SLAVE
 
-  sabsorb=`basename $sabsorb | awk 'BEGIN { FS="_" } { print $7 }'`
+  sabsorb=`basename $slave | awk 'BEGIN { FS="_" } { print $7 }'`
   mkdir -p $TMPDIR/run/data/$sabsorb
 
   ln -s $slave $TMPDIR/run/data/$sabsorb/`basename $slave`
@@ -68,15 +65,14 @@ done
 ciop-log "INFO" "Launching adore for baseline"
 export ADORESCR=/opt/adore/scr
 export PATH=/usr/local/bin:/opt/adore/scr:$PATH
-adore "p $_CIOP_APPLICATION_PATH/adore/libexec/baseline.adr $mabsorb $TMPDIR/run/data"
-
+ciop-log "DEBUG" "`tree`"
+cd $TMPDIR/run
+adore "p $_CIOP_APPLICATION_PATH/adore/libexec/baseline.adr $mabsorb"
 [ $? -ne 0 ] && exit $ERR_ADORE
 
-ciop-publish -m $TMPDIR/run/process/*.eps
+ciop-publish -m $TMPDIR/run/*.eps
 res=$?
 
 [ $res -ne 0 ] && exit $ERR_PUBLISH
  
-rm -rf $TMPDIR
-
 ciop-log "INFO" "Done"

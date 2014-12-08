@@ -1,0 +1,51 @@
+
+
+settings apply -r m_orbdir=/home/fbrito/ODR 
+settings apply -r dataFile="ASA_*.N1"
+settings apply -r m_in_method="ASAR"
+
+for scene in `scenes include`
+do
+  bold "Processing ${scene}"
+  settings apply -r -q master=${scene} slave="dummy"
+  eval "m_readfiles; m_porbits" &> m_${scene}.out
+done
+
+[ -f _orbits.txt ] && rm -f _orbits.txt
+
+bold `scenes include`
+
+# set the master as provided
+master=$1
+settings apply -r -q master=${master}
+
+for scene in `scenes include`
+do
+  if [ "${master}" == "${scene}" ]; then
+    continue
+  fi
+  bold "Processing ${master}_${scene}"
+  settings apply -r -q slave=${scene} 
+  echo "${slave}" >> _orbits.txt #used in plotting
+  coarseorb &> ${scene}_co.out
+done
+
+# Btemp
+for orbit in `cat _orbits.txt`
+do
+  echo $orbit
+  cat ${master}_${orbit}.res | grep Btemp | tr -s " " | awk 'BEGIN { FS = " "} ; { print $3}' >> Btemp.txt 
+done
+
+# Bperp
+for orbit in `cat _orbits.txt`
+do
+  echo $orbit
+  cat ${master}_${orbit}.res | grep Bperp | tr -s " " | awk 'BEGIN { FS = " "} ; { print $3}' >> Bperp.txt 
+done
+
+paste Btemp.txt Bperp.txt _orbits.txt > baseline_$master
+
+gnuplot_baseline baseline_$master
+
+rm -f *.txt *_co.out *.res *.drs *.log *.out baseline_$master 

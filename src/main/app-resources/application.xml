@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="us-ascii"?>
-<application xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" id="tsx-adore">
+<application xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" id="baseline">
   <jobTemplates>
     <jobTemplate id="adore">
       <streamingExecutable>/application/adore/run.sh</streamingExecutable>
       <defaultParameters>
-        <parameter id="master" title="TerraSAR-X master product reference" abstract="Define the master TerraSAR-X product reference to use with ADORE" scope="runtime">s3://terrasar-x/2014/02/TSX_20140212T164857.921_Etna_C222_O055_A_R_SM006_SSC.tar.gz</parameter>
+        <parameter id="master" title="master product reference" abstract="Define the master product reference to use with ADORE" scope="runtime">https://eo-virtual-archive4.esa.int/supersites/ASA_IMS_1PNUPA20041103_194714_000000162031_00429_14010_4519.N1</parameter>
       </defaultParameters>
       <defaultJobconf>
       	<property id="ciop.job.max.tasks">1</property>
@@ -12,12 +12,12 @@
       </defaultJobconf>
     </jobTemplate>
   </jobTemplates>
-  <workflow id="adore_wf" title="TerraSAR-X processing with ADORE DORIS" abstract="TerraSAR-X processing with ADORE DORIS">
+  <workflow id="adore_baseline" title="Baseline processing with ADORE DORIS" abstract="Baseline processing with ADORE DORIS">
     <workflowVersion>1.0</workflowVersion>
     <node id="node_adore">
       <job id="adore" />
       <sources>
-        <source scope="runtime" id="slave" title="TerraSAR-X slave product reference" abstract="Define the slave TerraSAR-X product reference to use with ADORE" refid="string:list">s3://terrasar-x/2014/02/TSX_20140201T164858.314_Etna_C221_O055_A_R_SM006_SSC.tar.gz</source>
+        <source scope="runtime" id="slave" title="slave product reference(s)" abstract="Define the slave product reference(s) to use with ADORE" refid="string:list">https://eo-virtual-archive4.esa.int/supersites/ASA_IMS_1PNDPA20100421_194653_000000162088_00429_42567_0448.N1,https://eo-virtual-archive4.esa.int/supersites/ASA_IMS_1PNDPA20091028_194656_000000162083_00429_40062_0447.N1,https://eo-virtual-archive4.esa.int/supersites/ASA_IMS_1PNDPA20080521_194703_000000162068_00429_32547_0443.N1</source>
       </sources>
       <parameters/>
     </node>
