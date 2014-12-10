@@ -37,6 +37,12 @@ trap cleanExit EXIT
 ciop-log "INFO" "creating the directory structure"
 mkdir -p $TMPDIR/input
 
+
+# copies the ODR files
+ciop-log "INFO" "copying the ODR files"
+mkdir -p $TMPDIR/run
+tar xfz $_CIOP_APPLICATION_PATH/adore/assets/ODR.tgz -C $TMPDIR/run
+
 master_ref="`ciop-getparam master`"
 
 master="`echo $master_ref | ciop-copy -O $TMPDIR/input -`"
@@ -52,7 +58,7 @@ while read slave_ref
 do
 
   ciop-log "INFO" "Retrieving slave"
-  slave="`echo $slave_ref | ciop-copy -O $TMPDIR -`"
+  slave="`echo $slave_ref | ciop-copy -O $TMPDIR/input -`"
   [ $? -ne 0 ] && exit $ERR_SLAVE
 
   sabsorb=`basename $slave | awk 'BEGIN { FS="_" } { print $7 }'`
@@ -69,9 +75,13 @@ ciop-log "DEBUG" "`tree`"
 cd $TMPDIR/run
 adore "p $_CIOP_APPLICATION_PATH/adore/libexec/baseline.adr $mabsorb"
 [ $? -ne 0 ] && exit $ERR_ADORE
+ciop-log "DEBUG" "`tree`"
 
-ciop-publish -m $TMPDIR/run/*.eps
+convert -density 300 $TMPDIR/run/baseline_${mabsorb}.eps -resize 1024x1024 $TMPDIR/run/baseline_${mabsorb}.png
+
+ciop-publish -m $TMPDIR/run/baseline_${mabsorb}.eps
 res=$?
+ciop-publish -m $TMPDIR/run/baseline_${mabsorb}.png
 
 [ $res -ne 0 ] && exit $ERR_PUBLISH
  

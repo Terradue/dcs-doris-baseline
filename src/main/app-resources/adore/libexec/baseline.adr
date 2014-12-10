@@ -1,6 +1,6 @@
 
 
-settings apply -r m_orbdir=/home/fbrito/ODR 
+settings apply -r m_orbdir=./ODR 
 settings apply -r dataFile="ASA_*.N1"
 settings apply -r m_in_method="ASAR"
 
